@@ -1,8 +1,23 @@
 import { useState } from 'react';
 import Head from 'next/head';
+import { API, graphqlOperation } from 'aws-amplify';
+import * as mutations from '../src/graphql/mutations';
 
 export default function Home() {
   const [username, setUsername] = useState('');
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    const user = { name: username };
+
+    const newUser = await API.graphql({
+      query: mutations.createBlog,
+      variables: {
+        input: user,
+      },
+    });
+  };
 
   return (
     <>
@@ -18,10 +33,10 @@ export default function Home() {
 
         <h2>Create User</h2>
 
-        <form action="">
+        <form onSubmit={handleSubmit}>
           <div className="form-control">
             <label htmlFor="username">Username</label>
-            <input id="username" type="text" name="username" />
+            <input id="username" type="text" name="username" value={username} onChange={(event) => setUsername(event.target.value)} required />
           </div>
 
           <div className="form-control">
